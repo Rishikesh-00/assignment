@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="./css/style.css">
+
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="email" placeholder="Username or Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <div class="g-recaptcha" data-sitekey="6LcXligrAAAAACUy2OCh9suUuZhpCj8tKOyOYU3L"></div>
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="register.html">Register</a></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const captchaToken = grecaptcha.getResponse();
+      
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, captchaToken })
+      });
+
+      const data = await response.json();
+      console.log(response)
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = 'profile.html';
+      } else {
+        alert(data.message);
+      }
+    });
+  </script>
+</body>
+</html>
